@@ -17,7 +17,15 @@ function setAccounts(array $accs)
 {
     $accounts = $accs;
     uasort($accounts, function ($a, $b) {
-        return $a['surname'][0] <=> $b['surname'][0];
+        if ($a['surname'][0] != $b['surname'][0]) {
+            return $a['surname'][0] <=> $b['surname'][0];
+        } else {
+            $i = 1;
+            do {
+                $i++;
+            } while ($a['surname'][$i] == $b['surname'][$i]);
+            return $a['surname'][$i] <=> $b['surname'][$i];
+        }
     });
     $accounts = json_encode($accounts);
     file_put_contents(__DIR__ . '/accounts.json', $accounts);
@@ -34,9 +42,9 @@ function createAccount($name, $surname, $personID)
         $newIban = generateIBAN();
         $accounts = getAccounts();
         $accounts[$newIban] = ['name' => $name, 'surname' => $surname, 'idCode' => $personID, 'balance' => 0];
+        setAccounts($accounts);
+        header('Location: ' . URL);
     }
-    setAccounts($accounts);
-    header('Location: ' . URL);
 }
 
 function generateIBAN(): string
@@ -74,6 +82,9 @@ function validateID(string $ID): bool
 
 function validateName(string $name): bool
 {
+    if (strlen($name) < 3) {
+        return false;
+    }
     return true;
 }
 
