@@ -4,8 +4,7 @@ function initialize()
 {
     if (!file_exists(__DIR__ . '/accounts.json')) {
         $accounts = [];
-        $accounts = json_encode($accounts);
-        file_put_contents(__DIR__ . '/accounts.json', $accounts);
+        setAccounts($accounts);
     }
 }
 
@@ -20,7 +19,7 @@ function setAccounts(array $accs)
     file_put_contents(__DIR__ . '/accounts.json', $accounts);
 }
 
-function createAccount($name, $surname, $personID): array|bool
+function createAccount($name, $surname, $personID)
 {
     $idCheck = validateID($personID);
     $nameCheck = validateName($name);
@@ -31,9 +30,8 @@ function createAccount($name, $surname, $personID): array|bool
         $newIban = generateIBAN();
         $accounts = getAccounts();
         $accounts[$newIban] = ['name' => $name, 'surname' => $surname, 'idCode' => $personID, 'balance' => 0];
-        return $accounts;
     }
-    return false;
+    setAccounts($accounts);
 }
 
 function generateIBAN(): string
@@ -74,21 +72,34 @@ function validateName(string $name): bool
     return true;
 }
 
-function deleteAccount(string $iban): array|bool
+function deleteAccount(string $iban)
 {
 
     $accounts = getAccounts();
     unset($accounts[$iban]);
-    return $accounts;
+    setAccounts($accounts);
 }
 
-function getAmount(array $acc): float | int
+function getAmount(array $acc)
 {
     $accounts = getAccounts();
     return 5;
 }
 
-function setAmount(string $iban, string $ammount, string $operation): array | bool
+function incBalance(string $iban, string $ammount)
 {
-    return true;
+    $accounts = getAccounts();
+    $accounts[$iban]['balance'] += (float) $ammount;
+    setAccounts($accounts);
+}
+function decBalance(string $iban, string $ammount)
+{
+    $accounts = getAccounts();
+    $accounts[$iban]['balance'] -= (float) $ammount;
+    setAccounts($accounts);
+}
+
+function showMain()
+{
+    require __DIR__ . '/templates/main.php';
 }
