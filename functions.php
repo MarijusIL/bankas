@@ -16,7 +16,7 @@ function getAccounts(): array
 function setAccounts(array $accs)
 {
     $accounts = $accs;
-    usort($accounts, function ($a, $b) {
+    uasort($accounts, function ($a, $b) {
         return $a['surname'][0] <=> $b['surname'][0];
     });
     $accounts = json_encode($accounts);
@@ -36,6 +36,7 @@ function createAccount($name, $surname, $personID)
         $accounts[$newIban] = ['name' => $name, 'surname' => $surname, 'idCode' => $personID, 'balance' => 0];
     }
     setAccounts($accounts);
+    header('Location: ' . URL);
 }
 
 function generateIBAN(): string
@@ -62,12 +63,12 @@ function generateIBAN(): string
 function validateID(string $ID): bool
 {
     $accounts = getAccounts();
+
     foreach ($accounts as $check) {
         if ($check['idCode'] === $ID) {
             return false;
         }
     }
-
     return true;
 }
 
@@ -83,13 +84,9 @@ function deleteAccount(string $iban)
         unset($accounts[$iban]);
         setAccounts($accounts);
     }
+    header('Location: ' . URL);
 }
 
-function getAmount(array $acc)
-{
-    $accounts = getAccounts();
-    return 5;
-}
 
 function incBalance(string $iban, string $amount)
 {
@@ -97,11 +94,15 @@ function incBalance(string $iban, string $amount)
     $accounts[$iban]['balance'] += (float) $amount;
     $accounts[$iban]['balance'] = round($accounts[$iban]['balance'], 2);
     setAccounts($accounts);
+    header('Location: ' . URL);
 }
 function decBalance(string $iban, string $amount)
 {
     $accounts = getAccounts();
-    $accounts[$iban]['balance'] -= (float) $amount;
-    $accounts[$iban]['balance'] = round($accounts[$iban]['balance'], 2);
-    setAccounts($accounts);
+    if ($accounts[$iban]['balance'] >= (float) $amount) {
+        $accounts[$iban]['balance'] -= (float) $amount;
+        $accounts[$iban]['balance'] = round($accounts[$iban]['balance'], 2);
+        setAccounts($accounts);
+    }
+    header('Location: ' . URL);
 }
