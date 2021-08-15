@@ -19,12 +19,26 @@ function getAccounts(): array
     return json_decode(file_get_contents(__DIR__ . '/accounts.json'), 1);
 }
 
-function createAccount($name, $surname, $personID)
+function setAccounts(array $accs)
 {
-    $newIban = generateIBAN();
-    $accounts = getAccounts();
+    $accounts = json_encode($accs);
+    file_put_contents(__DIR__ . '/accounts.json', $accounts);
+}
 
-    $accounts[$newIban] = ['name' => $name, 'surname' => $surname, 'idCode' => $personID];
+function createAccount($name, $surname, $personID): array|bool
+{
+    $idCheck = validateID($personID);
+    $nameCheck = validateName($name);
+    $surnameCheck = validateName($surname);
+
+
+    if ($idCheck && $nameCheck && $surnameCheck) {
+        $newIban = generateIBAN();
+        $accounts = getAccounts();
+        $accounts[$newIban] = ['name' => $name, 'surname' => $surname, 'idCode' => $personID, 'balance' => 0];
+        return $accounts;
+    }
+    return false;
 }
 
 function generateIBAN(): string
@@ -40,7 +54,7 @@ function generateIBAN(): string
         }
         $unique = true;
         foreach ($ibanList as $check) {
-            if ($check == $iban) {
+            if ($check === $iban) {
                 $unique = false;
             }
         }
@@ -48,19 +62,34 @@ function generateIBAN(): string
     return $iban;
 }
 
-function validateID(): bool
+function validateID(string $ID): bool
+{
+    $accounts = getAccounts();
+    foreach ($accounts as $check) {
+        if ($check['idCode'] === $ID) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function validateName(string $name): bool
 {
     return true;
 }
 
-function deleteAccount()
+function deleteAccount(): array|bool
 {
+    return true;
 }
 
-function getAmount()
+function getAmount(array $acc): float | int
 {
+    $accounts = getAccounts();
+    return 5;
 }
 
-function setAmount(array $acc, string $operation): void
+function setAmount(array $acc, string $ammount, string $operation): void
 {
 }

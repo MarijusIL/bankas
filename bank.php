@@ -2,6 +2,23 @@
 require __DIR__ . '/functions.php';
 define('URL', 'http://localhost/lape/bankas/bank.php');
 initialize();
+
+if ('POST' == $_SERVER['REQUEST_METHOD']) {
+    $accounts = getAccounts();
+    if ('del' == $_POST['action_type']) {
+        $deleted = deleteAccount();
+    } elseif ('add' == $_POST['action_type']) {
+        $accounts[$iban] = setAmount($accounts[$iban], $_POST['ammount'], 'add');
+    } elseif ('sub' == $_POST['action_type']) {
+        $accounts[$iban] = setAmount($accounts[$iban], $_POST['ammount'], 'sub');
+    } elseif ('create' == $_POST['action_type']) {
+        $accounts = createAccount($_POST['name'], $_POST['surname'], $_POST['id']);
+    }
+    setAccounts($accounts);
+    header('Location: ' . URL);
+    die;
+}
+
 ?>
 
 
@@ -18,9 +35,27 @@ initialize();
 </head>
 
 <body>
-    <form action="http://localhost/lape/bankas/bank.php" method="post">
-
-    </form>
+    <div>
+        <form action="http://localhost/lape/bankas/bank.php" method="post">
+            <label>Įrašykite vardą : <input type="text" name="name"></label>
+            <label>Įrašykite pavardę : <input type="text" name="surname"></label>
+            <label>Įrašykite asmens kodą : <input type="text" name="id"></label>
+            <button type="submit" name="action_type" value="create">Sukurti naują sąskaitą</button>
+        </form>
+    </div>
+    <div>
+        <h2>Sąskaita LT###################</h2>
+        <h3>Vardenis Pavardenis</h3>
+        <p>Sąskaitoje yra: 00.00 eur</p>
+    </div>
+    <div>
+        <form action="http://localhost/lape/bankas/bank.php" method="post">
+            <label>Įrašykite sumą : <input type="text" name="ammount"></label>
+            <button type="submit" name="action_type" value="add">Pridėti lėšas</button>
+            <button type="submit" name="action_type" value="sub">Nuskaičiuoti lėšas</button>
+            <button type="submit" name="action_type" value="del">Uždaryti sąskaitą</button>
+        </form>
+    </div>
 </body>
 
 </html>
