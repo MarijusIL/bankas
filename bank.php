@@ -6,7 +6,7 @@ initialize();
 if ('POST' == $_SERVER['REQUEST_METHOD']) {
     $accounts = getAccounts();
     if ('del' == $_POST['action_type']) {
-        $deleted = deleteAccount();
+        $deleted = deleteAccount($iban);
     } elseif ('add' == $_POST['action_type']) {
         $accounts[$iban] = setAmount($accounts[$iban], $_POST['ammount'], 'add');
     } elseif ('sub' == $_POST['action_type']) {
