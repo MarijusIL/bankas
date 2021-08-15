@@ -1,21 +1,30 @@
 <?php
+require __DIR__ . '/routerHelperFunctions.php';
 
 function router()
 {
+    $route = $_GET['route'] ?? '';
+
     if ('GET' == $_SERVER['REQUEST_METHOD']) {
-        showMain();
-    } elseif ('POST' == $_SERVER['REQUEST_METHOD']) {
-        $accounts = getAccounts();
-        if ('del' == $_POST['action_type']) {
-            // $deleted = deleteAccount($iban);
-        } elseif ('add' == $_POST['action_type']) {
-            // $accounts[$iban] = setAmount($accounts[$iban], $_POST['ammount'], 'add');
-        } elseif ('sub' == $_POST['action_type']) {
-            // $accounts[$iban] = setAmount($accounts[$iban], $_POST['ammount'], 'sub');
-        } elseif ('create' == $_POST['action_type']) {
-            $accounts = createAccount($_POST['name'], $_POST['surname'], $_POST['id']);
+        if ('' == $route) {
+            showMain();
+        } elseif ('create' == $route) {
+            showCreate();
+        } elseif ('bDec' == $route) {
+            showDec();
+        } elseif ('bInc' == $route) {
+            showInc();
         }
-        setAccounts($accounts);
+    } elseif ('POST' == $_SERVER['REQUEST_METHOD']) {
+        if ('del' == $route) {
+            deleteAccount($_GET['id']);
+        } elseif ('add' == $route) {
+            incBalance($_GET['id'], $_POST['amount']);
+        } elseif ('sub' == $route) {
+            decBalance($_GET['id'], $_POST['amount']);
+        } elseif ('create' == $route) {
+            createAccount($_POST['name'], $_POST['surname'], $_POST['id']);
+        }
         header('Location: ' . URL);
         die;
     }

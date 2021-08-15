@@ -15,7 +15,11 @@ function getAccounts(): array
 
 function setAccounts(array $accs)
 {
-    $accounts = json_encode($accs);
+    $accounts = $accs;
+    usort($accounts, function ($a, $b) {
+        return $a['surname'][0] <=> $b['surname'][0];
+    });
+    $accounts = json_encode($accounts);
     file_put_contents(__DIR__ . '/accounts.json', $accounts);
 }
 
@@ -74,10 +78,11 @@ function validateName(string $name): bool
 
 function deleteAccount(string $iban)
 {
-
     $accounts = getAccounts();
-    unset($accounts[$iban]);
-    setAccounts($accounts);
+    if (0 === $accounts[$iban]['balance']) {
+        unset($accounts[$iban]);
+        setAccounts($accounts);
+    }
 }
 
 function getAmount(array $acc)
@@ -86,20 +91,17 @@ function getAmount(array $acc)
     return 5;
 }
 
-function incBalance(string $iban, string $ammount)
+function incBalance(string $iban, string $amount)
 {
     $accounts = getAccounts();
-    $accounts[$iban]['balance'] += (float) $ammount;
+    $accounts[$iban]['balance'] += (float) $amount;
+    $accounts[$iban]['balance'] = round($accounts[$iban]['balance'], 2);
     setAccounts($accounts);
 }
-function decBalance(string $iban, string $ammount)
+function decBalance(string $iban, string $amount)
 {
     $accounts = getAccounts();
-    $accounts[$iban]['balance'] -= (float) $ammount;
+    $accounts[$iban]['balance'] -= (float) $amount;
+    $accounts[$iban]['balance'] = round($accounts[$iban]['balance'], 2);
     setAccounts($accounts);
-}
-
-function showMain()
-{
-    require __DIR__ . '/templates/main.php';
 }
