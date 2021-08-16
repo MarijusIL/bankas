@@ -16,3 +16,4 @@
         <a href="<?= URL ?>" class="btn btn-light m-3">Visos Sąskaitos</a>
         <a href="<?= URL ?>?route=create" class="btn btn-success m-3">Atidaryti naują Sąskaitą</a>
     </nav>
+    <?php showMessage(); ?>

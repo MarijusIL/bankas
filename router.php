@@ -25,7 +25,5 @@ function router()
         } elseif ('create' == $route) {
             createAccount($_POST['name'], $_POST['surname'], $_POST['id']);
         }
-        header('Location: ' . URL);
-        die;
     }
 }
